@@ -1,4 +1,4 @@
-# Mahcine Learning SOM 作業 - (2017/4/19)
+# Machine Learning SOM 作業 - (2017/4/19)
 ------
 ## 檔案
 * #### 結構
