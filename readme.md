@@ -47,6 +47,8 @@
 
     更改 `df_numerical_tmp` 變數中的 ` ['OH WK', 'OH FCST WK', 'BL WK',........]` 選取需要丟進去 SOM 跑的 input Data.
 
+    更改 `som = SOM(7, 7, input_dim, 50)` 其中的 7 * 7為輸出的loaction map 長相, 50為跑的迴圈數量
+
     2.  #### clustering > som.py
 
     SOM 演算法實作檔案，如果需要更改 neighborhood function 等演算法更改，須更改此檔案。
