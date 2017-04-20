@@ -32,6 +32,7 @@
 
 * #### 使用到的python package
     下載完後須確認本幾環境安裝此 packages
+    * Python 3.5.*
     * tensorflow !!!
     * pandas
     * openpyxl
