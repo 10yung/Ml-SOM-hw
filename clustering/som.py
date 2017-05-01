@@ -12,7 +12,7 @@ class SOM(object):
     #To check if the SOM has been trained
     _trained = False
 
-    def __init__(self, m, n, dim, n_iterations=100, alpha=None, sigma=None):
+    def __init__(self, m, n, dim, input_data, n_iterations=100, alpha=None, sigma=None):
         """
         Initializes all necessary components of the TensorFlow
         Graph.
@@ -61,12 +61,13 @@ class SOM(object):
             self._location_vects = tf.constant(np.array(
                 list(self._neuron_locations(m, n))))
 
+
             ##PLACEHOLDERS FOR TRAINING INPUTS
             #We need to assign them as attributes to self, since they
             #will be fed in during training
 
             #The training vector
-            self._vect_input = tf.placeholder("float", [dim])
+            self._vect_input = tf.placeholder("float",  shape=[dim])
             #Iteration number
             self._iter_input = tf.placeholder("float")
 
@@ -84,10 +85,17 @@ class SOM(object):
             #   tf.reduce_sum: second arg means reduce col axis
             #   tf.pow: Computes the power of one value to another. 2 means square
             #   tf.stack: Stacks a list of rank-R tensors into one rank-(R+1) tensor. rank1 tensor --> rank2 tensor
-            bmu_index = tf.argmin(tf.sqrt(tf.reduce_sum(
-                tf.pow(tf.subtract(self._weightage_vects, tf.stack(
-                    [self._vect_input for i in range(m*n)])), 2), 1)),
-                                  0)
+            bmu_index = tf.argmin(
+                            tf.sqrt(
+                                tf.reduce_sum(
+                                    tf.pow(
+                                        tf.subtract(
+                                            self._weightage_vects,
+                                            tf.stack([self._vect_input for i in range(m*n)])
+                                            ),
+                                    2),
+                                1)),
+                        0)
 
             #This will extract the location of the BMU based on the BMU's
             #index
@@ -95,6 +103,7 @@ class SOM(object):
             #  tf.pad: add padding to matrix, np.array([[0, 1]]) means add 1 element after bmu matrix
             slice_input = tf.pad(tf.reshape(bmu_index, [1]),
                                  np.array([[0, 1]]))
+            bmu_loc_1 = tf.slice(self._location_vects, slice_input,tf.constant(np.array([1, 2])))
             bmu_loc = tf.reshape(tf.slice(self._location_vects, slice_input,
                                           tf.constant(np.array([1, 2]))),
                                  [2])
@@ -129,6 +138,16 @@ class SOM(object):
             learning_rate_multiplier = tf.stack([tf.tile(tf.slice(
                 learning_rate_op, np.array([i]), np.array([1])), [dim])
                                                for i in range(m*n)])
+
+
+            # learning_rate_multiplier_1 = [tf.tile(tf.slice(
+            #     learning_rate_op, np.array([1]), np.array([1])), [dim]) for i in range(m*n)]
+            # learning_rate_multiplier_2 = tf.slice(
+            #     learning_rate_op, np.array([1]), np.array([1]))
+            # learning_rate_multiplier_3 = learning_rate_op, np.array([1])
+            # learning_rate_multiplier_4 = np.array([1])
+
+
             weightage_delta = tf.multiply(
                 learning_rate_multiplier,
                 tf.subtract(tf.stack([self._vect_input for i in range(m*n)]),
@@ -145,6 +164,34 @@ class SOM(object):
             init_op = tf.global_variables_initializer()
             self._sess.run(init_op)
 
+
+            # print('------bmu_index------')
+            # print(self._sess.run(bmu_index, feed_dict = {self._vect_input: input_data[0]}))
+            #
+            # print('------slice_input------')
+            # print(self._sess.run(slice_input, feed_dict = {self._vect_input: input_data[0]}))
+            #
+            # print('------bmu_loc------')
+            # print(self._sess.run(bmu_loc_1, feed_dict = {self._vect_input: input_data[0]}))
+            # print(self._sess.run(bmu_loc, feed_dict = {self._vect_input: input_data[0]}))
+            #
+            # print('------bmu_distance_squares------')
+            # print(self._sess.run(bmu_distance_squares, feed_dict = {self._vect_input: input_data[0]}))
+            #
+            # print('------neighbourhood_func------')
+            # print(self._sess.run(bmu_distance_squares, feed_dict = {self._vect_input: input_data[0]}))
+            #
+            # print('------learning_rate_op------')
+            # print(self._sess.run(learning_rate_op, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
+            #
+            # print('------learning_rate_multiplier------')
+            # print(self._sess.run(learning_rate_multiplier, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
+            # # print('------learning_rate_multiplier_1------')
+            # print(self._sess.run(learning_rate_multiplier_1, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
+            # print('------learning_rate_multiplier_2------')
+            # print(self._sess.run(learning_rate_multiplier_2, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
+            # print('------learning_rate_multiplier_3------')
+            # print(self._sess.run(learning_rate_multiplier_3, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
     def _neuron_locations(self, m, n):
         """
         Yields one by one the 2-D locations of the individual neurons
@@ -152,6 +199,7 @@ class SOM(object):
         """
         #Nested iterations over both dimensions
         #to generate all 2-D locations in the map
+        # result: Tensor("Const:0", shape=(49, 2), dtype=int64)
         for i in range(m):
             for j in range(n):
                 yield np.array([i, j])
@@ -180,8 +228,7 @@ class SOM(object):
         # enumerate:returns a iterator that will return (0, thing[0]), (1, thing[1]), (2, thing[2]), and so forth.
         centroid_grid = [[] for i in range(self._m)]
         self._weightages = list(self._sess.run(self._weightage_vects))
-        # print '-------------------self._weightages--------------------'
-        # print self._weightages
+
         self._locations = list(self._sess.run(self._location_vects))
         for i, loc in enumerate(self._locations):
             centroid_grid[loc[0]].append(self._weightages[i])

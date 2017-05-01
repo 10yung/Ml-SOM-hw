@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from pandas import ExcelWriter
 import openpyxl
 import datetime
@@ -14,7 +15,7 @@ df = pd.read_excel('./data/WPG_data_test.xlsx')
 # define which title to be noimal
 df_nominal = df.ix[:, ['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']]
 df_numerical_tmp = df.ix[:, ['OH WK', 'OH FCST WK', 'BL WK', 'BL FCST WK', 'Last BL', 'Backlog', 'BL <= 9WKs', 'DC OH', 'On the way', 'Hub OH', 'Others OH', 'Avail.', 'Actual WK', 'FCST WK', 'Actual AWU', 'FCST AWU', 'FCST M', 'FCST M1', 'FCST M2', 'FCST M3']]
-df_numerical = df_numerical_tmp.apply(pd.to_numeric, errors='coerce').fillna(0)
+df_numerical = df_numerical_tmp.apply(pd.to_numeric, errors='coerce').fillna(-1)
 
 # concat nominal title to _201_107_Zer_T6W_TOS_Joe format
 # title_concat( @param1(df): nominal_dataframe,
@@ -35,7 +36,7 @@ input_data = np.array(df_numerical)
 #-----------------------------------SOM process-------------------------------------------------------
 
 #Train a 20x30 SOM with 400 iterations
-som = SOM(7, 7, input_dim, 50)
+som = SOM(7, 7, input_dim, input_data, 100)
 print('training start : ' + str(datetime.datetime.now()))
 som.train(input_data)
 
