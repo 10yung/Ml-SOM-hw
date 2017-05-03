@@ -6,43 +6,38 @@ import openpyxl
 import datetime
 from clustering.som import SOM
 from model import reformat
+import random
 
 
 #-----------------------------------Data pre-process-------------------------------------------------------
 # get  training data
-df = pd.read_excel('./data/WPG_data_test.xlsx')
+df = pd.read_excel('./data/WPG_data.xlsx')
+
+# -----------------------------------input data random pre-process------------------------------------
+df_ran = df.sample(frac=1)
 
 # define which title to be noimal
-df_nominal = df.ix[:, ['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']]
-df_numerical_tmp = df.ix[:, ['OH WK', 'OH FCST WK', 'BL WK', 'BL FCST WK', 'Last BL', 'Backlog', 'BL <= 9WKs', 'DC OH', 'On the way', 'Hub OH', 'Others OH', 'Avail.', 'Actual WK', 'FCST WK', 'Actual AWU', 'FCST AWU', 'FCST M', 'FCST M1', 'FCST M2', 'FCST M3']]
+df_nominal = df_ran.ix[:, ['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']]
+df_numerical_tmp = df_ran.ix[:, ['OH WK', 'OH FCST WK', 'BL WK', 'BL FCST WK', 'Last BL', 'Backlog', 'BL <= 9WKs', 'DC OH', 'On the way', 'Hub OH', 'Others OH', 'Avail.', 'Actual WK', 'FCST WK', 'Actual AWU', 'FCST AWU', 'FCST M', 'FCST M1', 'FCST M2', 'FCST M3']]
 df_numerical = df_numerical_tmp.apply(pd.to_numeric, errors='coerce').fillna(-1)
-
-# concat nominal title to _201_107_Zer_T6W_TOS_Joe format
-# title_concat( @param1(df): nominal_dataframe,
-#               @param2(int): first N char )
-# label_abbr = reformat.title_concat(df_nominal,3);
-
-# force str to numeric datatype (if not => NaN) then replace NaN to 0
 
 
 # get data dim to latter SOM prcess
 input_dim = len(df_numerical.columns)
+input_num = len(df_numerical.index)
 
+
+# -----------------------------------input data random pre-process------------------------------------
 # change data to np array (SOM accept nparray format)
 input_data = np.array(df_numerical)
-
 
 
 #-----------------------------------SOM process-------------------------------------------------------
 
 #Train a 20x30 SOM with 400 iterations
-som = SOM(7, 7, input_dim, input_data, 100)
+som = SOM(30, 30, input_dim, input_data, input_num)
 print('training start : ' + str(datetime.datetime.now()))
 som.train(input_data)
-
-
-#Get output grid for visualization
-image_grid = som.get_centroids()
 
 
 #Map datato their closest neurons

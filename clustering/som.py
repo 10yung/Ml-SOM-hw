@@ -165,33 +165,6 @@ class SOM(object):
             self._sess.run(init_op)
 
 
-            # print('------bmu_index------')
-            # print(self._sess.run(bmu_index, feed_dict = {self._vect_input: input_data[0]}))
-            #
-            # print('------slice_input------')
-            # print(self._sess.run(slice_input, feed_dict = {self._vect_input: input_data[0]}))
-            #
-            # print('------bmu_loc------')
-            # print(self._sess.run(bmu_loc_1, feed_dict = {self._vect_input: input_data[0]}))
-            # print(self._sess.run(bmu_loc, feed_dict = {self._vect_input: input_data[0]}))
-            #
-            # print('------bmu_distance_squares------')
-            # print(self._sess.run(bmu_distance_squares, feed_dict = {self._vect_input: input_data[0]}))
-            #
-            # print('------neighbourhood_func------')
-            # print(self._sess.run(bmu_distance_squares, feed_dict = {self._vect_input: input_data[0]}))
-            #
-            # print('------learning_rate_op------')
-            # print(self._sess.run(learning_rate_op, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
-            #
-            # print('------learning_rate_multiplier------')
-            # print(self._sess.run(learning_rate_multiplier, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
-            # # print('------learning_rate_multiplier_1------')
-            # print(self._sess.run(learning_rate_multiplier_1, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
-            # print('------learning_rate_multiplier_2------')
-            # print(self._sess.run(learning_rate_multiplier_2, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
-            # print('------learning_rate_multiplier_3------')
-            # print(self._sess.run(learning_rate_multiplier_3, feed_dict = {self._vect_input: input_data[0], self._iter_input: 1}))
     def _neuron_locations(self, m, n):
         """
         Yields one by one the 2-D locations of the individual neurons
@@ -214,14 +187,18 @@ class SOM(object):
         """
 
         #Training iterations
-        for iter_no in range(self._n_iterations):
-            print('LoopNo: ' + str(iter_no) + ' - Time: ' + str(datetime.datetime.now().time()))
+        # for iter_no in range(self._n_iterations):
+            # print('LoopNo: ' + str(iter_no) + ' - Time: ' + str(datetime.datetime.now().time()))
             #Train with each vector one by one
-            for input_vect in input_vects:
-                self._sess.run(self._training_op,
-                               feed_dict={self._vect_input: input_vect,
-                                          self._iter_input: iter_no})
-        print('training end : ' + str(datetime.datetime.now()))
+        iter_no = 1
+        for input_vect in input_vects:
+            self._sess.run(self._training_op,
+                           feed_dict={self._vect_input: input_vect,
+                                      self._iter_input: iter_no})
+            iter_no += 1
+            print(iter_no)
+        # print('training end : ' + str(datetime.datetime.now()))
+
 
         #Store a centroid grid for easy retrieval later on
         # list() : converts to lists
@@ -236,14 +213,14 @@ class SOM(object):
 
         self._trained = True
 
-    def get_centroids(self):
-        """
-        Returns a list of 'm' lists, with each inner list containing
-        the 'n' corresponding centroid locations as 1-D NumPy arrays.
-        """
-        if not self._trained:
-            raise ValueError("SOM not trained yet")
-        return self._centroid_grid
+    # def get_centroids(self):
+    #     """
+    #     Returns a list of 'm' lists, with each inner list containing
+    #     the 'n' corresponding centroid locations as 1-D NumPy arrays.
+    #     """
+    #     if not self._trained:
+    #         raise ValueError("SOM not trained yet")
+    #     return self._centroid_grid
 
     def map_vects(self, input_vects):
         """
