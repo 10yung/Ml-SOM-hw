@@ -5,13 +5,14 @@ from pandas import ExcelWriter
 import openpyxl
 import datetime
 from clustering.som import SOM
+from DataTools import DataReformat as datarf
 from model import reformat
 import random
 
 
 #-----------------------------------Data pre-process-------------------------------------------------------
 # get  training data
-df = pd.read_excel('./data/WPG_data.xlsx')
+df = pd.read_excel('./data/WPG_data_test.xlsx')
 
 # -----------------------------------input data random pre-process------------------------------------
 df_ran = df.sample(frac=1)
@@ -35,7 +36,7 @@ input_data = np.array(df_numerical)
 #-----------------------------------SOM process-------------------------------------------------------
 
 #Train a 20x30 SOM with 400 iterations
-som = SOM(30, 30, input_dim, input_data, input_num)
+som = SOM(5, 5, input_dim, input_data, input_num)
 print('training start : ' + str(datetime.datetime.now()))
 som.train(input_data)
 
@@ -44,14 +45,19 @@ som.train(input_data)
 mapped = som.map_vects(input_data)
 result = np.array(mapped)
 
+print(result)
+# -------------------------check each data belong to which cluster---------------------------------------
+clusting_result_location_list = datarf.clustered_location_input_index(5, 5, result, input_data)
+print(clusting_result_location_list)
 
 #-------------------------------------Output format-----------------------------------------------------
-
 # output format
 output_np = np.concatenate((df_nominal, result), axis=1)
 output_pd = pd.DataFrame(data=output_np, columns=['Report Date', 'Customer', 'Type', 'Item Short Name', 'Brand', 'Sales', 'axis-x', 'axis-y'])
 # print(output_pd)
 
 
+
+
 # write to final csv
-output_pd.to_csv('./result/result.csv')
+output_pd.to_csv('./result/result1-test.csv')
