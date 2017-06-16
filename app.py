@@ -12,14 +12,14 @@ import random
 
 #-----------------------------------Data pre-process-------------------------------------------------------
 # get  training data
-df = pd.read_excel('./data/WPG_data_test.xlsx')
+df = pd.read_excel('./data/WPG_data.xlsx')
 
 # -----------------------------------input data random pre-process------------------------------------
 df_ran = df.sample(frac=1)
 
 # define which title to be noimal
 df_nominal = df_ran.ix[:, ['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']]
-df_numerical_tmp = df_ran.ix[:, ['OH WK', 'OH FCST WK', 'BL WK', 'BL FCST WK', 'Last BL', 'Backlog', 'BL <= 9WKs', 'DC OH', 'On the way', 'Hub OH', 'Others OH', 'Avail.', 'Actual WK', 'FCST WK', 'Actual AWU', 'FCST AWU', 'FCST M', 'FCST M1', 'FCST M2', 'FCST M3']]
+df_numerical_tmp = df_ran.ix[:,:]
 df_numerical = df_numerical_tmp.apply(pd.to_numeric, errors='coerce').fillna(-1)
 
 
@@ -36,7 +36,7 @@ input_data = np.array(df_numerical)
 #-----------------------------------SOM process-------------------------------------------------------
 
 #Train a 20x30 SOM with 400 iterations
-som = SOM(5, 5, input_dim, input_data, input_num)
+som = SOM(30, 20, input_dim, input_data, input_num)
 print('training start : ' + str(datetime.datetime.now()))
 som.train(input_data)
 
@@ -60,4 +60,4 @@ output_pd = pd.DataFrame(data=output_np, columns=['Report Date', 'Customer', 'Ty
 
 
 # write to final csv
-output_pd.to_csv('./result/result1-test.csv')
+output_pd.to_csv('./result/result_final.csv')
