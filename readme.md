@@ -1,7 +1,7 @@
-# Machine Learning SOM 作業 - (2017/4/19)
+# Machine Learning SOM assignemnt - (2017/4/19)
 ------
-## 說明
-* #### 結構
+## Description
+* #### Folder structure
 
 ```
 .
@@ -41,13 +41,13 @@
     * openpyxl
     * numpy
 
-* #### 主要檔案說明
+* #### Main file description
 
     1. #### app.py
 
-    執行檔，包含 read 資料、執行 SOM、output 成 `.csv` 檔案。
+    program endpoint，include read data、execute SOM、output to `.csv` file。
 
-    更改 `df_nominal` 變數中的 `['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']` 來選取需要的 nominal label_abbr
+    change `df_nominal` to `['Report Date', 'Customer', 'Type','Item Short Name', 'Brand', 'Sales']` and select nominal label_abbr
 
     更改 `df_numerical_tmp` 變數中的 ` ['OH WK', 'OH FCST WK', 'BL WK',........]` 選取需要丟進去 SOM 跑的 input Data.
 
